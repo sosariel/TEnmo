@@ -1,5 +1,6 @@
 package com.techelevator.tenmo.dao;
 
+import com.techelevator.tenmo.model.AccountBalance;
 import com.techelevator.tenmo.model.User;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -95,7 +96,18 @@ public class JdbcUserDao implements UserDao {
 
         return true;
     }
+////////////////////////////////////////////////////////////////////////////////////////////////
+    public BigDecimal getBalance() { //Ray- Trying to retrieve balance from database
+        AccountBalance currentBalance = null;
+        String sql = "SELECT account_id, balance " + "FROM account" + "WHERE user_id = ?";
 
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+        if (results.next()){
+            currentBalance.getBalance(mapRowToUser(results));
+        }
+        return currentBalance;
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////
     private User mapRowToUser(SqlRowSet rs) {
         User user = new User();
         user.setId(rs.getInt("user_id"));
@@ -105,4 +117,6 @@ public class JdbcUserDao implements UserDao {
         user.setAuthorities("USER");
         return user;
     }
+
+
 }
