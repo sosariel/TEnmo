@@ -7,12 +7,16 @@ import com.techelevator.tenmo.services.AccountInfoService;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.ConsoleService;
 
+import java.math.BigDecimal;
+
 public class App {
 
     private static final String API_BASE_URL = "http://localhost:8080/";
 
     private final ConsoleService consoleService = new ConsoleService();
     private final AuthenticationService authenticationService = new AuthenticationService(API_BASE_URL);
+    //ADDED OBJECTS
+    private final AccountInfoService accountInfoService = new AccountInfoService(API_BASE_URL);
 
     private AuthenticatedUser currentUser;
 
@@ -86,8 +90,14 @@ public class App {
         }
     }
 
-	private void viewCurrentBalance() { //we need to get the balance
-        User balance = new User();
+//NEW METHOD
+	private void viewCurrentBalance() {
+BigDecimal balance = accountInfoService.getBalance();
+if (balance != null) {
+    System.out.println("Your current account balance is: " + balance);
+} else {
+    consoleService.printErrorMessage();
+}
 
 
 		

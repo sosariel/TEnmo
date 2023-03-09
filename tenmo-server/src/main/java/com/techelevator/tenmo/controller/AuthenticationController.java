@@ -59,7 +59,7 @@ public class AuthenticationController {
         }
     }
 ////////////////////////////////////////////////////////////////////////
-    //I am trying to allow the user to see their balance
+ /*   //I am trying to allow the user to see their balance
     @PreAuthorize("hasRole('USER')")
     @ResponseStatus(HttpStatus.ACCEPTED)
     @RequestMapping(path = "/balance", method = RequestMethod.GET)
@@ -67,8 +67,12 @@ public class AuthenticationController {
     public BigDecimal getBalance(User id) {
         AccountBalance balance =
     }
-
+*/
 //////////////////////////////////////////////
+
+
+
+
     //4.1 I should be able to choose from a list of users to send TE Bucks to.
     @PreAuthorize("hasRole('USER')")
     @ResponseStatus(HttpStatus.ACCEPTED)

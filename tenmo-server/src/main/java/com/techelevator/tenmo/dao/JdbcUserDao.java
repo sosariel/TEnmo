@@ -97,7 +97,7 @@ public class JdbcUserDao implements UserDao {
         return true;
     }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-    public BigDecimal getBalance() { //Ray- Trying to retrieve balance from database
+ /*  public BigDecimal getBalance() { //Ray- Trying to retrieve balance from database
         AccountBalance currentBalance = null;
         String sql = "SELECT account_id, balance " + "FROM account" + "WHERE user_id = ?";
 
@@ -106,7 +106,7 @@ public class JdbcUserDao implements UserDao {
             currentBalance.getBalance(mapRowToUser(results));
         }
         return currentBalance;
-}
+} */
 //////////////////////////////////////////////////////////////////////////////////////////////////
     private User mapRowToUser(SqlRowSet rs) {
         User user = new User();
