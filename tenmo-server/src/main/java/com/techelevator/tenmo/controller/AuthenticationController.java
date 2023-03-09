@@ -74,10 +74,10 @@ public class AuthenticationController {
 
 
     //4.1 I should be able to choose from a list of users to send TE Bucks to.
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.ACCEPTED)
     @RequestMapping(path = "/users", method = RequestMethod.GET)
-    public List<User> list(@RequestParam(defaultValue = "") String username) {
+    public List<User> list(@RequestParam String username) {
         return userDao.findAll(); //im referencing hw16securingAPI
     }
 

@@ -1,11 +1,10 @@
 package com.techelevator.tenmo;
 
-import com.techelevator.tenmo.model.AuthenticatedUser;
-import com.techelevator.tenmo.model.User;
-import com.techelevator.tenmo.model.UserCredentials;
+import com.techelevator.tenmo.model.*;
 import com.techelevator.tenmo.services.AccountInfoService;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.ConsoleService;
+import com.techelevator.tenmo.services.TransferService;
 
 import java.math.BigDecimal;
 
@@ -14,9 +13,11 @@ public class App {
     private static final String API_BASE_URL = "http://localhost:8080/";
 
     private final ConsoleService consoleService = new ConsoleService();
-    private final AuthenticationService authenticationService = new AuthenticationService(API_BASE_URL);
+    private final AuthenticationService authenticationService = new AuthenticationService();
     //ADDED OBJECTS
     private final AccountInfoService accountInfoService = new AccountInfoService(API_BASE_URL);
+    //Ray-Added
+    private final Transfer transfer = new Transfer();
 
     private AuthenticatedUser currentUser;
 
@@ -57,13 +58,22 @@ public class App {
             consoleService.printErrorMessage();
         }
     }
-
-    private void handleLogin() {
-        UserCredentials credentials = consoleService.promptForCredentials();
-        currentUser = authenticationService.login(credentials);
-        if (currentUser == null) {
+///////////////////////////////////////////////////////////////////////////////////////////////
+    private void handleLogin() { //copying 16 Securing API Lecture handleLogin in App class
+        String username = consoleService.promptForString("Username: ");
+        String password = consoleService.promptForString("Password: ");
+        String token = authenticationService.login(username, password);
+        if (token != null) {
+            authenticationService.sethAuthToken(token);
+        } else {
             consoleService.printErrorMessage();
         }
+////////////////////////////////////////////////////////////////////////////////////////////////
+//        UserCredentials credentials = consoleService.promptForCredentials();
+//        currentUser = authenticationService.login(credentials);
+//        if (currentUser == null) {
+//            consoleService.printErrorMessage();
+//        }
     }
 
     private void mainMenu() {
@@ -103,10 +113,27 @@ if (balance != null) {
 		
 	}
 
-	private void viewTransferHistory() {
-		// TODO Auto-generated method stub
-		
-	}
+	private void viewTransferHistory() { //ray-im guessing at this point
+        int transferId = consoleService.promptForInt("Please enter transfer ID to view details (0 to cancel): ");
+        if (transferId == 0) {
+            return;
+        }
+        Transfer transfer = authenticationService.getTransferId();
+        if (transfer == null) {
+            System.out.println("Transfer not found.");
+            return;
+        }
+        System.out.println("--------------------------------------------");
+        System.out.println("Transfer Details");
+        System.out.println("--------------------------------------------");
+        System.out.println("Id: " + transfer.getTransferId());
+        System.out.println("From: " + transfer.getAccountFrom());
+        System.out.println("To: " + transfer.getAccountTo());
+        System.out.println("Type: " + transfer.getTransferTypeId());
+        System.out.println("Status: " + transfer.getTransferStatusId());
+        System.out.println("Amount: $" + transfer.getAmount());
+    }
+
 
 	private void viewPendingRequests() {
 		// TODO Auto-generated method stub

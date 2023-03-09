@@ -18,6 +18,6 @@ public class AccountController {
 
 
     //NEW METHOD
-    @RequestMapping( path = "/balance", method = RequestMethod.GET)
+ //   @RequestMapping( path = "/balance", method = RequestMethod.GET)
 
 }
