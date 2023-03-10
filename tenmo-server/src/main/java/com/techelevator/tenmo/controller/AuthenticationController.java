@@ -22,13 +22,12 @@ import java.util.List;
  * Controller to authenticate users.
  */
 @RestController
-@PreAuthorize("isAuthenticated()")
-@RequestMapping ("/account")
 public class AuthenticationController {
 
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final UserDao userDao;
+
 
     public AuthenticationController(TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder, UserDao userDao) {
         this.tokenProvider = tokenProvider;
@@ -45,7 +44,7 @@ public class AuthenticationController {
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = tokenProvider.createToken(authentication, false);
-
+        
         User user = userDao.findByUsername(loginDto.getUsername());
 
         return new LoginResponseDto(jwt, user);
@@ -58,21 +57,17 @@ public class AuthenticationController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User registration failed.");
         }
     }
-////////////////////////////////////////////////////////////////////////
- /*   //I am trying to allow the user to see their balance
-    @PreAuthorize("hasRole('USER')")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    @RequestMapping(path = "/balance", method = RequestMethod.GET)
+    ////////////////////////////////////////////////////////////////////////
+/*   //I am trying to allow the user to see their balance
+   @PreAuthorize("hasRole('USER')")
+   @ResponseStatus(HttpStatus.ACCEPTED)
+   @RequestMapping(path = "/balance", method = RequestMethod.GET)
 // goes to account > id and from id we can retrieve the BODY of info which will contain the balance (maybe?)
-    public BigDecimal getBalance(User id) {
-        AccountBalance balance =
-    }
+   public BigDecimal getBalance(User id) {
+       AccountBalance balance =
+   }
 */
 //////////////////////////////////////////////
-
-
-
-
     //4.1 I should be able to choose from a list of users to send TE Bucks to.
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.ACCEPTED)
@@ -81,4 +76,18 @@ public class AuthenticationController {
         return userDao.findAll(); //im referencing hw16securingAPI
     }
 
+//    @PreAuthorize("hasRole('USER')")
+//    @ResponseStatus(HttpStatus.ACCEPTED)
+//    @RequestMapping(path ="/balance", method = RequestMethod.GET)
+//    public User get() {
+//        RegisterUserDto authentication = userDao.
+//        String username =
+//        User user = userDao.findByUsername(username);
+//
+//        BigDecimal balance =
+//    }
+
+
+
 }
+

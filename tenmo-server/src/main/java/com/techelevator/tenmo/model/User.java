@@ -15,7 +15,7 @@ public class User {
    @JsonIgnore
    private boolean activated;
    private Set<Authority> authorities = new HashSet<>();
-
+   private String balance; //ray added this to try and make a balance call
 
    public User() { }
 
@@ -25,6 +25,7 @@ public class User {
       this.password = password;
       if(authorities != null) this.setAuthorities(authorities);
       this.activated = true;
+      this.balance = balance; //added this so that it would describe a user.
    }
 
    public int getId() {
@@ -66,7 +67,15 @@ public class User {
    public void setAuthorities(Set<Authority> authorities) {
       this.authorities = authorities;
    }
+   ////////////////////////////////////////////////////////////
+   public String getBalance() { // **Ray- I changed all balance datatypes to String because int wasnt working and I think we get a string of info from Database?
+      return balance;
+   }
 
+   public void setBalance(String balance) {
+      this.balance = balance;
+   }
+///////////////////////////////////////////////////////////////
    public void setAuthorities(String authorities) {
       String[] roles = authorities.split(",");
       for(String role : roles) {

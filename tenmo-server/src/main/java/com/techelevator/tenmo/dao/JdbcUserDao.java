@@ -1,6 +1,5 @@
 package com.techelevator.tenmo.dao;
 
-import com.techelevator.tenmo.model.AccountBalance;
 import com.techelevator.tenmo.model.User;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -96,18 +95,7 @@ public class JdbcUserDao implements UserDao {
 
         return true;
     }
-////////////////////////////////////////////////////////////////////////////////////////////////
- /*  public BigDecimal getBalance() { //Ray- Trying to retrieve balance from database
-        AccountBalance currentBalance = null;
-        String sql = "SELECT account_id, balance " + "FROM account" + "WHERE user_id = ?";
 
-        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
-        if (results.next()){
-            currentBalance.getBalance(mapRowToUser(results));
-        }
-        return currentBalance;
-} */
-//////////////////////////////////////////////////////////////////////////////////////////////////
     private User mapRowToUser(SqlRowSet rs) {
         User user = new User();
         user.setId(rs.getInt("user_id"));
@@ -115,8 +103,19 @@ public class JdbcUserDao implements UserDao {
         user.setPassword(rs.getString("password_hash"));
         user.setActivated(true);
         user.setAuthorities("USER");
+//        user.setBalance(rs.getString("balance")); // TODO commented this part out cause it causes an error at Login in Client. I dont know how else to get a balance now
         return user;
     }
 
+    public User getBalance(int userId) { //Ray- Trying to retrieve balance from database
+       User balance = null;
+       String sql = "SELECT user_id, balance " + "FROM account" + "WHERE user_id = ?";
+
+       SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId);
+       if (results.next()){
+           balance = (mapRowToUser(results)); //ray-mapRow does not have a set balance tho. So I think I make one?
+       }
+       return balance;
+    }
 
 }
