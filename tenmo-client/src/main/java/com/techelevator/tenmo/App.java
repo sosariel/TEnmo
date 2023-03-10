@@ -6,6 +6,8 @@ import com.techelevator.tenmo.services.AccountInfoService;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.ConsoleService;
 
+import java.math.BigDecimal;
+
 public class App {
 
     private static final String API_BASE_URL = "http://localhost:8080/";
@@ -86,7 +88,12 @@ public class App {
     }
 
 	private void viewCurrentBalance() {
-        //
+        BigDecimal balance = accountInfoService.getBalance();
+        if (balance != null) {
+            System.out.println("Your current balance is: " + balance);
+        } else{
+            consoleService.printErrorMessage();
+        }
         }
 
 	private void viewTransferHistory() {
