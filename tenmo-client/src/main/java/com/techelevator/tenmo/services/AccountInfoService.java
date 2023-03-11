@@ -1,5 +1,7 @@
 package com.techelevator.tenmo.services;
 
+import com.techelevator.tenmo.model.Account;
+import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.model.UserCredentials;
 import com.techelevator.util.BasicLogger;
@@ -14,23 +16,28 @@ import java.math.BigDecimal;
 
     public class AccountInfoService {
 
-        public static String API_BASE_URL = "http://localhost:8080";
+        private String API_BASE_URL;
         private RestTemplate restTemplate = new RestTemplate();
         //NEW INSTANCE VARIABLES
-        public String baseUrl;
-        private String authToken = null;
+        private AuthenticatedUser currentUser;
 
         //NEW CONSTRUCTOR
-        public AccountInfoService(String baseUrl) {
-            this.baseUrl = baseUrl + "account/";
+        public AccountInfoService(String baseUrl, AuthenticatedUser currentUser) {
+            this.API_BASE_URL = baseUrl;
+            this.currentUser = currentUser;
         }
 
         //NEW METHOD TO GET BALANCE
         public BigDecimal getBalance(){
-            BigDecimal balance = null;
+            BigDecimal balance = new BigDecimal(0);
+            System.out.println();
             try{
-                ResponseEntity<BigDecimal> response = restTemplate.exchange(baseUrl + "balance", HttpMethod.GET, makeAuthEntity(), BigDecimal.class);
-                balance = response.getBody();
+                ResponseEntity<Account> response = restTemplate.exchange(API_BASE_URL + "account/balance/1001", HttpMethod.GET,
+                        makeAuthEntity(), Account.class);
+
+                balance = response.getBody().getBalance();
+
+                System.out.println("Current Balance:$" + balance);
             } catch (RestClientResponseException | ResourceAccessException e) {
                 BasicLogger.log(e.getMessage());
             } return balance;
@@ -60,10 +67,12 @@ import java.math.BigDecimal;
    }
 */
         //Returns an HttpEntity with the `Authorization: Bearer:` header
-        private HttpEntity<Void> makeAuthEntity() {
+        private HttpEntity makeAuthEntity() {
             HttpHeaders headers = new HttpHeaders();
-            headers.setBearerAuth(authToken);
-            return new HttpEntity<>(headers);
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setBearerAuth(currentUser.getToken());
+            HttpEntity entity = new HttpEntity<>(headers);
+            return entity;
         }
     }
 

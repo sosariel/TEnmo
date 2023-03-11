@@ -14,8 +14,8 @@ public class App {
 
     private final ConsoleService consoleService = new ConsoleService();
     private final AuthenticationService authenticationService = new AuthenticationService(API_BASE_URL);
-    private final AccountInfoService accountInfoService = new AccountInfoService(API_BASE_URL);
     private AuthenticatedUser currentUser;
+    private final AccountInfoService accountInfoService = new AccountInfoService(API_BASE_URL, currentUser);
 
     public static void main(String[] args) {
         App app = new App();
@@ -61,6 +61,7 @@ public class App {
         if (currentUser == null) {
             consoleService.printErrorMessage();
         }
+        String token = currentUser.getToken();
     }
 
     private void mainMenu() {
@@ -88,14 +89,14 @@ public class App {
     }
 
 	private void viewCurrentBalance() {
-        BigDecimal balance = accountInfoService.getBalance();
-        if (balance != null) {
-            System.out.println("Your current balance is: " + balance);
-        } else{
-            consoleService.printErrorMessage();
-        }
-        }
+        AccountInfoService accountService = new AccountInfoService(API_BASE_URL, currentUser);
+        try {
+            accountService.getBalance();
+        } catch (NullPointerException e) {
+            System.out.println("You got nothing");
 
+        }
+    }
 	private void viewTransferHistory() {
         int transferId = consoleService.promptForInt("Please enter transfer ID to view details (0 to cancel): ");
         if (transferId == 0) {

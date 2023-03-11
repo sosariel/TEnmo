@@ -2,8 +2,10 @@ package com.techelevator.tenmo.controller;
 
 import com.techelevator.tenmo.dao.AccountDao;
 import com.techelevator.tenmo.dao.UserDao;
+import com.techelevator.tenmo.model.Account;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,12 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 import java.math.BigDecimal;
 import java.security.Principal;
 
-/* CAUSES SERVER TO FINISH EARLY
+
 @RestController
 @RequestMapping("/account")
 
- */
-@PreAuthorize("isAuthenticated()")
+
+//@PreAuthorize("isAuthenticated()")
 public class AccountController {
 
     private AccountDao accountDao;
@@ -30,11 +32,12 @@ public class AccountController {
     //NEW METHODS
 
     //GET REQUEST FOR BALANCE FROM USER
-    @RequestMapping( value = "/balance", method = RequestMethod.GET)
-    public BigDecimal getBalance(Principal principal) throws UsernameNotFoundException {
-        int userId = getCurrentUserId(principal);
-        return accountDao.getAccountByUserId(userId).getBalance();
+    @RequestMapping(value = "/balance/{id}", method = RequestMethod.GET)
+    public Account getBalance(@PathVariable int id) {
+        Account balance = accountDao.getBalance(id);
+        return balance;
     }
+
 
     //TAKES CURRENT USER AND RETRIEVES USER'S ID FROM DATABASE
     private int getCurrentUserId(Principal principal){
