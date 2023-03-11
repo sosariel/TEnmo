@@ -39,6 +39,7 @@ public class AccountController {
     }
 
 
+
     //TAKES CURRENT USER AND RETRIEVES USER'S ID FROM DATABASE
     private int getCurrentUserId(Principal principal){
         return userDao.findByUsername(principal.getName()).getId();
