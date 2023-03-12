@@ -12,7 +12,7 @@ import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.List;
 
-@RestController
+
 public class TransferController {
 
     private TransferDao transferDao;
@@ -30,7 +30,7 @@ public class TransferController {
     @PreAuthorize("isAuthenticated()")
     @RequestMapping(path = "transfer/{id}", method = RequestMethod.GET)
     public Transfer getTransferByTransferId(@PathVariable int transferId) {
-        return transferDao.getUserTransfers(transferId);
+        return transferDao.getTransferById(transferId);
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -38,9 +38,9 @@ public class TransferController {
     public void sendMoney(@PathVariable int accountTo, @PathVariable int accountFrom, @Valid @PathVariable BigDecimal amount){
         transferDao.sendMoney(accountTo, accountFrom, amount);
     }
-
+/*
     @PreAuthorize("isAuthenticated()")
     @RequestMapping(path = "") //TODO I dont understand what to put here. It doesnt seem right to have a seperate url endpoint to receive money.
-
+*/
 
 }
