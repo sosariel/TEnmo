@@ -35,12 +35,14 @@ public class TransferController {
 
     @PreAuthorize("isAuthenticated()")
     @RequestMapping(path = "sendmoneyto/{recieverId}", method = RequestMethod.PUT)
-    public void sendMoney(@PathVariable int accountTo, @PathVariable int accountFrom, @Valid @PathVariable BigDecimal amount){
-        transferDao.sendMoney(accountTo, accountFrom, amount);
+    public void sendMoney(@PathVariable int accountTo, @Valid @PathVariable BigDecimal amount){
+        transferDao.sendMoney(accountTo, amount);
     }
-/*
+
     @PreAuthorize("isAuthenticated()")
-    @RequestMapping(path = "") //TODO I dont understand what to put here. It doesnt seem right to have a seperate url endpoint to receive money.
-*/
+    @RequestMapping(path = "requestmoneyfrom/{senderId}", method = RequestMethod.GET)
+    public void requestMoney(@PathVariable int accountFrom, @Valid @PathVariable BigDecimal amount){
+        transferDao.requestMoney(accountFrom, amount);
+    }
 
 }
