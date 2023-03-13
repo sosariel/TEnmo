@@ -58,19 +58,6 @@ public class JdbcUserDaoTests extends BaseDaoTests {
         Assert.assertEquals(USER_1, actualUser);
     }
 
-    @Test
-    public void getUserById_given_invalid_user_id_returns_null() {
-        User actualUser = sut.getUserById(-1);
-
-        Assert.assertNull(actualUser);
-    }
-
-    @Test
-    public void getUserById_given_valid_user_id_returns_user() {
-        User actualUser = sut.getUserById(USER_1.getId());
-
-        Assert.assertEquals(USER_1, actualUser);
-    }
 
     @Test
     public void findAll_returns_all_users() {

@@ -28,7 +28,7 @@ public class JdbcTransferDao {
 
         return newId;
     }
-
+/*
     public List<Transfer> viewTransfersById(Transfer transfer) {
         String viewTransfersForUser = "SELECT transfer_id, transfer_type_desc, transfer_status_desc, username, account_to, amount\n" +
                 "FROM transfer JOIN transfer_type ON transfer_type_id = transfer_type_id\n" +
@@ -44,7 +44,7 @@ public class JdbcTransferDao {
 
         return viewTransfersForUser;
     }
-
+*/
 
 //    public void sendMoney(int accountTo, int accountFrom, BigDecimal amount){
 //

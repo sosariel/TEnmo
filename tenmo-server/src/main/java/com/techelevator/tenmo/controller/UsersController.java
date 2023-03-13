@@ -15,7 +15,7 @@ public class UsersController {
     public UsersController(UserDao userDao){
         this.userDao = userDao;
     }
-
+/*
     @RequestMapping(path = "users", method = RequestMethod.GET) {
         public List<User> getUsers () {
             return userDao.findAll();
@@ -27,4 +27,6 @@ public class UsersController {
             return userDao.getUserById(account);
         }
     }
+
+ */
 }

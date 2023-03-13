@@ -1,6 +1,7 @@
 package com.techelevator.tenmo;
 
 import com.techelevator.tenmo.model.AuthenticatedUser;
+import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.model.UserCredentials;
 import com.techelevator.tenmo.services.AccountInfoService;
 import com.techelevator.tenmo.services.AuthenticationService;
@@ -8,6 +9,8 @@ import com.techelevator.tenmo.services.ConsoleService;
 import com.techelevator.tenmo.services.TransferService;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Objects;
 
 public class App {
 
@@ -112,8 +115,26 @@ public class App {
 	}
 
 	private void sendBucks() {
-		// TODO Auto-generated method stub
-
+        List<User> users = accountInfoService.getUsers();
+        for(User user : users){
+            if(!Objects.equals(user.getId(), currentUser.getUser().getId())){
+                System.out.println("ID: " + user.getId() + " | " + user.getUsername());
+            }
+        }
+        int userIdSelection = consoleService.promptForInt("Please enter the recipient id: ");
+        viewCurrentBalance();
+        BigDecimal amountToSend = consoleService.promptForBigDecimal("Please enter the amount to send: ");
+        String token = currentUser.getToken();
+        BigDecimal currentBalance = accountInfoService.getBalance();
+        if (amountToSend.compareTo(currentBalance) == 1){
+            System.out.println("Not enough funds for transfer");
+        } else if (amountToSend.compareTo(BigDecimal.ZERO) <= 0){
+            System.out.println("You can't have zero or negative money");
+        } else {
+            transferService.sendMoney(accountInfoService.findUserAccountByid(userIdSelection), accountInfoService.getAccountById(currentUser.getUser().getId(), currentUser.getToken()), amountToSend, currentUser.getToken());
+            System.out.println("Transfer confirmed.");
+            viewCurrentBalance();
+        }
 	}
 
 	private void requestBucks() {
