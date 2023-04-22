@@ -7,10 +7,12 @@ import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.math.BigDecimal;
+import java.sql.PreparedStatement;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class JdbcTransferDao {
+public class JdbcTransferDao implements TransferDao{
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -18,47 +20,43 @@ public class JdbcTransferDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    //Transfer method in DAO to create an ID to detail transfers as they appear.
-    public Integer createTransfer(Transfer transfer) {
-        String sql = "INSERT INTO public.transfer(\n" +
-                "\ttransfer_type_id, transfer_status_id, account_from, account_to, amount)\n" +
-                "\tVALUES (?, ?, ?, ?, ?, ?);";
-        Integer newId = jdbcTemplate.queryForObject(sql, Integer.class, transfer.getTransferType(), transfer.getTransferStatusId(),
-                transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
 
-        return newId;
+    @Override
+    public List<Transfer> getUserTransfers(int accountId) {
+        return null;
     }
-/*
-    public List<Transfer> viewTransfersById(Transfer transfer) {
-        String viewTransfersForUser = "SELECT transfer_id, transfer_type_desc, transfer_status_desc, username, account_to, amount\n" +
-                "FROM transfer JOIN transfer_type ON transfer_type_id = transfer_type_id\n" +
-                "JOIN transfer_status ON transfer_status_id = transfer_status_id\n" +
-                "JOIN account ON account_id = account_from\n" +
-                "JOIN tenmo_user ON user_id = a.user_id\n" +
-                "WHERE account_to = ? OR account_from = ?;";
 
-        SqlRowSet rowSql = jdbcTemplate.queryForRowSet(viewTransfersForUser, transfer);
-        while (rowSql.next()) {
-            viewTransfersForUser.add(mapRowToTransfer(rowSql));
-        }
-
-        return viewTransfersForUser;
+    @Override
+    public Transfer getTransferById(int transferId) {
+        return null;
     }
-*/
 
-//    public void sendMoney(int accountTo, int accountFrom, BigDecimal amount){
-//
-//        String sendMoneySql = "SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount\n" +
-//                "\tFROM public.transfer;";
-//    }
+    //SQL UPDATES ACCOUNT BALANCES AND INSERTS NEW ROW INTO 'TRANSFER' TABLE
+    @Override
+    public void sendMoney(int accountTo, int accountFrom, BigDecimal amount) {
+        String sql = "BEGIN TRANSACTION; " +
+                "UPDATE account SET balance = balance + ? WHERE account_id = ?; " +
+                "UPDATE account SET balance = balance - ? WHERE account_id = ?; " +
+                "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
+                "VALUES (2, 2, ?, ?, ?); " +
+                "COMMIT;";
+        jdbcTemplate.update(sql, amount, accountFrom, amount, accountTo, accountFrom, accountTo, amount);
+
+    }
+
+    @Override
+    public void requestMoney(int accountTo, BigDecimal amount) {
+
+    }
+
 
 
     private Transfer mapRowToTransfer(SqlRowSet rowSet) {
         Transfer transfer = new Transfer();
         transfer.setTransferId(rowSet.getInt("transfer_id"));
-        transfer.setTransferType(rowSet.getInt("transfer_type"));
-        transfer.setTransferStatusId(rowSet.getInt("transfer_status_id"));
-        transfer.setAccountFrom(rowSet.getInt("account_from"));
+        transfer.setType(rowSet.getString("type"));
+        transfer.setDescription(rowSet.getString("description"));
+        transfer.setAccountFrom(rowSet.getString("account_from"));
         transfer.setAccountTo(rowSet.getInt("account_to"));
         transfer.setAmount(rowSet.getBigDecimal("amount"));
         return transfer;

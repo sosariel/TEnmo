@@ -10,12 +10,12 @@ public class User {
 
    private int id;
    private String username;
-   @JsonIgnore // prevent from being sent to client
+   @JsonIgnore
    private String password;
    @JsonIgnore
    private boolean activated;
    private Set<Authority> authorities = new HashSet<>();
-   private String balance; //ray added this to try and make a balance call
+   private String balance;
 
    public User() { }
 
@@ -25,7 +25,7 @@ public class User {
       this.password = password;
       if(authorities != null) this.setAuthorities(authorities);
       this.activated = true;
-      this.balance = balance; //added this so that it would describe a user.
+      this.balance = balance;
    }
 
    public int getId() {

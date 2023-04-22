@@ -12,32 +12,31 @@ import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-//I want to make a class that has all the methods to get information for the Account. By doing this I can then call this service in the App class for Balance, Transfer, Pending etc. (?)
+
 
     public class AccountInfoService {
 
         private String API_BASE_URL;
         private RestTemplate restTemplate = new RestTemplate();
-        //NEW INSTANCE VARIABLES
         private AuthenticatedUser currentUser;
 
-        //NEW CONSTRUCTOR
         public AccountInfoService(String baseUrl, AuthenticatedUser currentUser) {
             this.API_BASE_URL = baseUrl;
             this.currentUser = currentUser;
         }
 
-        //NEW METHOD TO GET BALANCE
-        public BigDecimal getBalance(){
-            BigDecimal balance = new BigDecimal(0);
+        //SENDS GET REQUEST TO RETRIEVE ACCOUNT BALANCE
+        public BigDecimal getBalance(int accountId, String token){
+            BigDecimal balance = null;
             System.out.println();
             try{
-                ResponseEntity<Account> response = restTemplate.exchange(API_BASE_URL + "account/balance/1001", HttpMethod.GET,
-                        makeAuthEntity(), Account.class);
+                ResponseEntity<Account> response = restTemplate.exchange(API_BASE_URL + "account/balance/" + accountId, HttpMethod.GET,
+                        makeAccEntity(token), Account.class);
 
                 balance = response.getBody().getBalance();
 
@@ -47,74 +46,76 @@ import java.util.List;
             } return balance;
         }
 
-        //NEW METHOD TO GET USERS
+
         public List<User> getUsers() {
+            User[] userArr = null;
             try{
-                ResponseEntity<User[]> response = restTemplate.getForEntity(API_BASE_URL + "users", User[].class);
-                return Arrays.asList(response.getBody());
+                ResponseEntity<User[]> response = restTemplate.exchange(API_BASE_URL + "users", HttpMethod.GET, makeUserEntity(), User[].class);
+                userArr = response.getBody();
             } catch (RestClientResponseException | ResourceAccessException e){
                 BasicLogger.log(e.getMessage());
-                return Collections.emptyList();
+
             }
-        }
-        //NEW METHOD TO GET ACCOUNTS BY USER ID
-        public int findUserAccountByid(int userId){
-            int id = 0;
-            String url = API_BASE_URL + "useraccount/";
-            try{
-                ResponseEntity<Integer> response = restTemplate.exchange(url + userId, HttpMethod.GET, makeAuthEntity(), Integer.class);
-                id = response.getBody();
-            }catch (RestClientResponseException | ResourceAccessException e){
-                BasicLogger.log(e.getMessage());
+            List<User> userList = new ArrayList<>();
+            for (User user: userArr){
+                userList.add(user);
             }
-            return id;
+            return userList;
         }
 
-        public int getAccountById(int userId, String token){
-            int id = 0;
-            String url = API_BASE_URL + "accounts/";
+        public String getUserName(int accountId){
+            String userName = "";
+            String url = API_BASE_URL + "username/" + accountId;
             try{
-                ResponseEntity<Account> response = restTemplate.exchange(url + userId, HttpMethod.GET, makeAuthEntity(), Account.class);
+                ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, makeStrEntity(), String.class);
+                userName = response.getBody();
+            } catch (RestClientResponseException | ResourceAccessException e){
+                BasicLogger.log(e.getMessage());
+            }
+            return userName;
+        }
+
+
+        // SENDS GET REQUEST TO RETRIEVE ID OF ACCOUNT
+        public int getAccountById(int userId, String token) {
+            int id = 0;
+            String url = API_BASE_URL + "accounts/" + userId;
+            try{
+                ResponseEntity<Account> response = restTemplate.exchange(url, HttpMethod.GET, makeAccEntity(token), Account.class);
                 id = response.getBody().getAccountId();
             }catch (RestClientResponseException | ResourceAccessException e){
                 BasicLogger.log(e.getMessage());
+
             }
             return id;
 
         }
 
 
-        //I want to make a method to get the balance
-        public User getViewBalance(User viewBalance){ //we pass in the users id for the method.
+
+        private HttpEntity<String> makeStrEntity() {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<User> entity = new HttpEntity<>(viewBalance, headers);
-
-            User returnedBalance = null;
-            try {
-                returnedBalance = restTemplate.postForObject(API_BASE_URL, entity, User.class);
-            } catch (RestClientResponseException e) {
-                BasicLogger.log(e.getMessage());
-            }
-            return returnedBalance;
-
+            return new HttpEntity<>(headers);
         }
 
-        //Register new username and password
-/*
-   public UserCredentials addUser(UserCredentials newUser){
-       UserCredentials returnedUser = null;
-
-   }
-*/
-        //Returns an HttpEntity with the `Authorization: Bearer:` header
-        private HttpEntity makeAuthEntity() {
+        private HttpEntity<User> makeUserEntity() {
+            User user = new User();
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.setBearerAuth(currentUser.getToken());
-            HttpEntity entity = new HttpEntity<>(headers);
-            return entity;
+            return new HttpEntity<>(user, headers);
         }
+
+        //CREATES HTTPENTITY OBJECT, CONTAINS ACCOUNT OBJECT, AN AUTHORIZATION TOKEN
+        private HttpEntity<Account> makeAccEntity(String token){
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setBearerAuth(token);
+            HttpEntity<Account> accEntity = new HttpEntity<>(new Account(), headers);
+            return accEntity;
+        }
+
+
     }
 
 

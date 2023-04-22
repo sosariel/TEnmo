@@ -37,6 +37,13 @@ public class JdbcUserDao implements UserDao {
         return userId;
     }
 
+    @Override
+    public int findAccountByUserId(int userId) {
+        String sql = "SELECT account_id FROM account WHERE user_id = ?";
+        Integer accountNum = jdbcTemplate.queryForObject(sql, Integer.class, userId);
+        return accountNum;
+    }
+
 
     @Override
     public List<User> findAll() {
@@ -93,19 +100,10 @@ public class JdbcUserDao implements UserDao {
         user.setPassword(rs.getString("password_hash"));
         user.setActivated(true);
         user.setAuthorities("USER");
-//        user.setBalance(rs.getString("balance")); // TODO commented this part out cause it causes an error at Login in Client. I dont know how else to get a balance now
+
         return user;
     }
 
-    public User getBalance(int userId) { //Ray- Trying to retrieve balance from database
-       User balance = null;
-       String sql = "SELECT user_id, balance " + "FROM account" + "WHERE user_id = ?";
 
-       SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId);
-       if (results.next()){
-           balance = (mapRowToUser(results)); //ray-mapRow does not have a set balance tho. So I think I make one?
-       }
-       return balance;
-    }
 
 }

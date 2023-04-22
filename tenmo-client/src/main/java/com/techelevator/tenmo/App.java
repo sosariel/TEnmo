@@ -1,6 +1,7 @@
 package com.techelevator.tenmo;
 
 import com.techelevator.tenmo.model.AuthenticatedUser;
+import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.model.UserCredentials;
 import com.techelevator.tenmo.services.AccountInfoService;
@@ -22,12 +23,12 @@ public class App {
     private final AccountInfoService accountInfoService = new AccountInfoService(API_BASE_URL, currentUser);
     private final TransferService transferService = new TransferService(API_BASE_URL);
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         App app = new App();
         app.run();
     }
 
-    private void run() {
+    private void run() throws Exception {
         consoleService.printGreeting();
         loginMenu();
         if (currentUser != null) {
@@ -69,7 +70,7 @@ public class App {
         String token = currentUser.getToken();
     }
 
-    private void mainMenu() {
+    private void mainMenu() throws Exception {
         int menuSelection = -1;
         while (menuSelection != 0) {
             consoleService.printMainMenu();
@@ -93,28 +94,27 @@ public class App {
         }
     }
 
+    //RETRIEVES CURRENT BALANCE FROM ACCOUNTINFOSERVICE
 	private void viewCurrentBalance() {
-        AccountInfoService accountService = new AccountInfoService(API_BASE_URL, currentUser);
+        String token = currentUser.getToken();
         try {
-            accountService.getBalance();
+            BigDecimal currentBalance = accountInfoService.getBalance(currentUser.getUser().getId(), token);
         } catch (NullPointerException e) {
-            System.out.println("You got nothing");
+            System.out.println("No balance");
 
         }
     }
 	private void viewTransferHistory() {
-        int transferId = consoleService.promptForInt("Please enter transfer ID to view details (0 to cancel): ");
-        if (transferId == 0) {
-            return;
+        System.out.println("Not Available");
         }
-    }
+
 
 	private void viewPendingRequests() {
-		// TODO Auto-generated method stub
+        System.out.println("Not Available");
 
 	}
-
-	private void sendBucks() {
+// PRINTS LIST OF IDS AND USERNAMES, SENDS MONEY FROM ONE ACCOUNT TO ANOTHER
+	private void sendBucks()  {
         List<User> users = accountInfoService.getUsers();
         for(User user : users){
             if(!Objects.equals(user.getId(), currentUser.getUser().getId())){
@@ -122,23 +122,24 @@ public class App {
             }
         }
         int userIdSelection = consoleService.promptForInt("Please enter the recipient id: ");
-        viewCurrentBalance();
         BigDecimal amountToSend = consoleService.promptForBigDecimal("Please enter the amount to send: ");
         String token = currentUser.getToken();
-        BigDecimal currentBalance = accountInfoService.getBalance();
+        int recipientAccountId = accountInfoService.getAccountById(userIdSelection, token);
+        int senderAccountId = accountInfoService.getAccountById(currentUser.getUser().getId(), token);
+        BigDecimal currentBalance = accountInfoService.getBalance(currentUser.getUser().getId(), token);
         if (amountToSend.compareTo(currentBalance) == 1){
             System.out.println("Not enough funds for transfer");
         } else if (amountToSend.compareTo(BigDecimal.ZERO) <= 0){
             System.out.println("You can't have zero or negative money");
         } else {
-            transferService.sendMoney(accountInfoService.findUserAccountByid(userIdSelection), accountInfoService.getAccountById(currentUser.getUser().getId(), currentUser.getToken()), amountToSend, currentUser.getToken());
+            transferService.sendMoney(senderAccountId, recipientAccountId, amountToSend, token);
             System.out.println("Transfer confirmed.");
             viewCurrentBalance();
         }
 	}
 
 	private void requestBucks() {
-		// TODO Auto-generated method stub
+        System.out.println("Not Available");
 
 	}
 

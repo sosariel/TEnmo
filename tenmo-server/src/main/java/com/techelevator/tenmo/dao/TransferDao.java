@@ -12,7 +12,7 @@ public interface TransferDao {
 
     public Transfer getTransferById(int transferId);
 
-    public void sendMoney(int accountTo, BigDecimal amount);
+    public void sendMoney(int accountTo, int accountFrom, BigDecimal amount);
 
     public void requestMoney(int accountTo, BigDecimal amount);
 

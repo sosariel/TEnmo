@@ -15,10 +15,8 @@ import java.security.Principal;
 
 
 @RestController
-@RequestMapping("/account")
 
 
-//@PreAuthorize("isAuthenticated()")
 public class AccountController {
 
     private AccountDao accountDao;
@@ -29,16 +27,20 @@ public class AccountController {
         this.userDao = userDao;
     }
 
-    //NEW METHODS
 
-    //GET REQUEST FOR BALANCE FROM USER
-    @RequestMapping(value = "/balance/{id}", method = RequestMethod.GET)
+
+    //HANDLES GET REQUEST AND RETURNS BALANCE
+    @RequestMapping(value = "/account/balance/{id}", method = RequestMethod.GET)
     public Account getBalance(@PathVariable int id) {
         Account balance = accountDao.getBalance(id);
         return balance;
     }
 
-
+    @PreAuthorize("isAuthenticated()")
+    @RequestMapping(path = "/accounts/{userId}", method = RequestMethod.GET)
+    public Account getAccountById(@PathVariable int userId){
+        return accountDao.getAccountById(userId);
+    }
 
     //TAKES CURRENT USER AND RETRIEVES USER'S ID FROM DATABASE
     private int getCurrentUserId(Principal principal){

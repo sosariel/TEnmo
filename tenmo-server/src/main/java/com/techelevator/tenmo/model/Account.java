@@ -4,15 +4,18 @@ import java.math.BigDecimal;
 public class Account {
 
     private BigDecimal balance;
-    //NEW INSTANCE VARIABLES
-    private Long accountId;
+    private int accountId;
     private int userId;
+
+    public Account() {
+
+    }
 
     public void setBalance(BigDecimal balance) {
         this.balance = balance;
     }
 
-    public void setAccountId(Long accountId) {
+    public void setAccountId(int accountId) {
         this.accountId = accountId;
     }
 
@@ -20,8 +23,8 @@ public class Account {
         this.userId = userId;
     }
 
-    //NEW CONSTRUCTOR
-    public Account(BigDecimal balance, Long accountId, int userId) {
+
+    public Account(BigDecimal balance, int accountId, int userId) {
         this.balance = balance;
         this.accountId = accountId;
         this.userId = userId;
@@ -31,7 +34,7 @@ public class Account {
         return balance;
     }
 
-    public Long getAccountId() {
+    public int getAccountId() {
         return accountId;
     }
 

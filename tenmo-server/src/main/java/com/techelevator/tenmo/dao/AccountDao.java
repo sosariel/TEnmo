@@ -5,7 +5,7 @@ import com.techelevator.tenmo.model.Account;
 //NEW CLASS
 public interface AccountDao {
 
-    Account getAccountByUserId(int userId);
+    Account getAccountById(int userId);
 
     Account getBalance(int userId);
 

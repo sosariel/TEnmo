@@ -5,7 +5,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
-//NEW CLASS
 @Component
 public class JdbcAccountDao implements AccountDao{
 
@@ -15,19 +14,19 @@ public class JdbcAccountDao implements AccountDao{
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    //RETRIEVES ACCOUNT BALANCE RECORD AND RETURNS IT AS OBJECT
+    //RETURNS ACCOUNT OBJECT FROM ACCOUNT TABLE THAT CORRESPONDS WITH USER
     @Override
-    public Account getAccountByUserId(int userId) {
+    public Account getAccountById(int userId) {
 
-        Account accountBalance = null;
-        String sql = "SELECT account_id, user_id, balance FROM account WHERE user_id = ?";
+        Account account = null;
+        String sql = "SELECT * FROM account WHERE user_id = ?;";
 
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId);
         while (results.next()){
-            accountBalance = mapRowToAccount(results);
+            account = mapRowToAccounts(results);
         }
 
-        return accountBalance;
+        return account;
     }
 
     @Override
@@ -39,6 +38,9 @@ public class JdbcAccountDao implements AccountDao{
     }
 
 
+
+    //RETRIEVES ACCOUNT BALANCE WITH QUERY
+    @Override
     public Account getBalance(int userId) {
         Account balance = null;
         String sql ="SELECT account_id, user_id, balance " +
@@ -51,8 +53,17 @@ public class JdbcAccountDao implements AccountDao{
         return balance;
     }
 
-    //MAPS EACH ROW TO ACCOUNTBALANCE OBJECT
+    //MAPS EACH ROW TO ACCOUNT OBJECT
     private Account mapRowToAccount(SqlRowSet results){
-        return new Account(results.getBigDecimal("balance"), results.getLong("account_id"), results.getInt("user_id"));
+        return new Account(results.getBigDecimal("balance"), results.getInt("account_id"), results.getInt("user_id"));
+    }
+
+    //MAPS ROW OF ACCOUNT TABLE TO OBJECT
+    private Account mapRowToAccounts(SqlRowSet rs){
+        Account accounts = new Account();
+        accounts.setAccountId(rs.getInt("account_id"));
+        accounts.setUserId(rs.getInt("user_id"));
+        accounts.setBalance(rs.getBigDecimal("balance"));
+        return accounts;
     }
 }

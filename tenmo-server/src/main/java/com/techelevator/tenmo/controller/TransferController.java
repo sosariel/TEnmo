@@ -12,7 +12,7 @@ import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.List;
 
-
+@RestController
 public class TransferController {
 
     private TransferDao transferDao;
@@ -22,27 +22,24 @@ public class TransferController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @RequestMapping(path = "accounttransfer/{id}", method = RequestMethod.GET)
-    public List<Transfer> listTransfer(@PathVariable int id){
-        return transferDao.getUserTransfers(id);
+    @RequestMapping(path = "userTransfers/{accountId}", method = RequestMethod.GET)
+    public List<Transfer> getUserTransfer(@PathVariable int accountId){
+        return transferDao.getUserTransfers(accountId);
     }
 
     @PreAuthorize("isAuthenticated()")
-    @RequestMapping(path = "transfer/{id}", method = RequestMethod.GET)
+    @RequestMapping(path = "transfers/{transferId}", method = RequestMethod.GET)
     public Transfer getTransferByTransferId(@PathVariable int transferId) {
         return transferDao.getTransferById(transferId);
     }
 
+    //HANDLES PUT REQUEST TO TRANSFER MONEY BETWEEN ACCOUNTS
     @PreAuthorize("isAuthenticated()")
-    @RequestMapping(path = "sendmoneyto/{recieverId}", method = RequestMethod.PUT)
-    public void sendMoney(@PathVariable int accountTo, @Valid @PathVariable BigDecimal amount){
-        transferDao.sendMoney(accountTo, amount);
+    @RequestMapping(path = "sendMoney/{accountTo}/{accountFrom}/{amount}", method = RequestMethod.PUT)
+    public void sendMoney(@PathVariable int accountTo, @PathVariable int accountFrom, @Valid @PathVariable BigDecimal amount){
+        transferDao.sendMoney(accountTo, accountFrom, amount);
     }
 
-    @PreAuthorize("isAuthenticated()")
-    @RequestMapping(path = "requestmoneyfrom/{senderId}", method = RequestMethod.GET)
-    public void requestMoney(@PathVariable int accountFrom, @Valid @PathVariable BigDecimal amount){
-        transferDao.requestMoney(accountFrom, amount);
-    }
+
 
 }
